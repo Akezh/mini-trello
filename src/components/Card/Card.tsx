@@ -1,28 +1,25 @@
-import React from 'react'
+import React, { FC } from 'react';
+import { Props } from "./props";
 
-type Props = {
-  title: string;
-  description?: string;
-  creationDate: Date;
-  editDate?: Date;
-  _handleCardClick: () => void;
-}
-
-export default function Card(props: Props) {
+export const Card: FC<Props> = ({
+  title,
+  creationDate,
+  _handleCardClick
+}: Props) => {
   return (
     <div className="rounded bg-light p-2 mb-3">
       <div className="row">
         <div>
-          <span style={{ fontSize: 16, fontWeight: 'bolder' }}>{props.title}</span>
+          <span style={{ fontSize: 16, fontWeight: 'bolder' }}>{title}</span>
         </div>
         <div className="d-flex align-items-center justify-content-between">
           <div
-            onClick={props._handleCardClick}
+            onClick={_handleCardClick}
             style={{ fontSize: 14, cursor: "pointer" }}
           >
             🖊
           </div>
-          <span style={{ fontSize: 14 }}>{props.creationDate.toLocaleDateString()}</span>
+          <span style={{ fontSize: 14 }}>{creationDate.toLocaleDateString()}</span>
         </div>
       </div>
     </div>
