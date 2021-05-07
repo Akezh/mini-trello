@@ -1,3 +1,9 @@
-# Getting Started with Create React App
+# Mini trello app
 
-Mini Trello Board with to do tasks
+### Done
+- 3 columns named "To Do", "In Progress", "Done"
+- Each column can generate cards
+- Edittable cards
+
+### Left
+- Drag and Drop functionality
