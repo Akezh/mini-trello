@@ -8,7 +8,7 @@ export default class Board extends Component {
     todoValue: "",
     progressValue: "",
     doneValue: "",
-    cardList: [{ id: 1, type: "todo", title: "Task Sample", description: "First to do task sample", creationDate: new Date("07.05.2021"), editDate: new Date("06.05.2021") }],
+    cardList: [],
     showModal: false,
     modalCardInfo: { id: 1, type: "todo", title: "To Do", description: "First to do task", creationDate: new Date("07.05.2021"), editDate: new Date("07.05.2021") },
   }
@@ -69,7 +69,7 @@ export default class Board extends Component {
   }
 
   _handleCardOnClick = (cardId: number, type: string) => {
-    let cardIndex = this.state.cardList.map((card) => { return card.id; }).indexOf(cardId);;
+    let cardIndex = this.state.cardList.map((card: any) => { return card.id; }).indexOf(cardId);;
     if (cardIndex === null || cardIndex === undefined) return;
 
     this.setState({
@@ -92,8 +92,8 @@ export default class Board extends Component {
 
   _handleModalSaveChanges = () => {
     let cardId = this.state.modalCardInfo.id;
-    let cardIndex = this.state.cardList.map((card) => { return card.id; }).indexOf(cardId);
-    let cardList = [...this.state.cardList];
+    let cardIndex = this.state.cardList && this.state.cardList.map((card: any) => { return card.id; }).indexOf(cardId);
+    let cardList: any = [...this.state.cardList];
 
     cardList[cardIndex] = this.state.modalCardInfo;
 
@@ -103,38 +103,45 @@ export default class Board extends Component {
 
   _handleModalDelete = () => {
     let cardId = this.state.modalCardInfo.id;
-    let cardIndex = this.state.cardList.map((card) => { return card.id; }).indexOf(cardId);
-    let cardList = [...this.state.cardList];
 
-    if (cardIndex !== -1 && cardIndex !== undefined) {
-      cardList.splice(cardIndex, 1);
+    if (this.state.cardList && this.state.cardList.length > 0) {
+      let cardIndex = this.state.cardList.map((card: any) => { return card.id }).indexOf(cardId);
+      let cardList = [...this.state.cardList];
+
+      if (cardIndex !== -1 && cardIndex !== undefined) {
+        cardList.splice(cardIndex, 1);
+      }
+      this.setState({
+        cardList,
+        showModal: false,
+      });
     }
-    this.setState({
-      cardList,
-      showModal: false,
-    });
   }
 
   componentDidMount = () => {
     // retrieve vals from local storage
-    // if (localStorage.length > 0) {
-    //   Object.keys(localStorage).forEach((cardId) => {
-    //     let result = localStorage.getItem(cardId);
-    //     if (result !== null) {
-    //       let card = JSON.parse(result);
+    const localStorageData = localStorage.getItem("cardList");
 
-    //       // this.setState({
-    //       //   cardList: [...this.state.cardList, card]
-    //       // })
-    //     }
-    //   });
-    // }
+    if (localStorageData) {
+      let cards = JSON.parse(localStorageData);
+      let cardArr = [cards][0];
+      for (let i = 0; i < cardArr.length; i++) {
+        let createdate = new Date(cardArr[i].creationDate);
+        let editdate = new Date(cardArr[i].editDate);
+        cardArr[i] = { ...cardArr[i], creationDate: createdate, editDate: editdate }
+      }
+
+      if (cardArr.length < 0)
+        return;
+
+      this.setState({
+        cardList: [...this.state.cardList].concat(cardArr)
+      })
+    }
   }
 
-  componentWillUnmount = () => {
-    // this.state.cardList.forEach((card) => {
-    //   localStorage.setItem(card.id.toString(), JSON.stringify(card));
-    // })
+  componentDidUpdate = () => {
+    localStorage.setItem("cardList", JSON.stringify(this.state.cardList));
   }
 
   render() {
@@ -178,6 +185,5 @@ export default class Board extends Component {
     )
   }
 }
-
 
 // 218 lines -> 191 lines -> 188 -> 159
