@@ -1,11 +1,10 @@
 import React from 'react';
 import './App.css';
-import Card from './components/Card/Card';
 import Board from './components/Board/Board';
 
 function App() {
   return (
-    <div>
+    <div className="app-wrapper">
       <Board />
     </div>
   );

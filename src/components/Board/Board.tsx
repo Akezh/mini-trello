@@ -1,23 +1,21 @@
-import React, { Component, createRef, KeyboardEvent } from 'react'
-import Card from '../Card/Card';
+import React, { Component, KeyboardEvent } from 'react'
+import { CardModal } from '../CardModal';
+import { CardColumn } from '../CardColumn';
 import { v4 as uuidv4 } from 'uuid';
-import { Button, Modal } from "react-bootstrap";
 
 export default class Board extends Component {
   state = {
     todoValue: "",
     progressValue: "",
     doneValue: "",
-    cardList: [{ id: 1, type: "todo", title: "To Do", description: "First to do task", creationDate: new Date("07.05.2021"), editDate: new Date("07.05.2021") }],
+    cardList: [{ id: 1, type: "todo", title: "Task Sample", description: "First to do task sample", creationDate: new Date("07.05.2021"), editDate: new Date("06.05.2021") }],
     showModal: false,
     modalCardInfo: { id: 1, type: "todo", title: "To Do", description: "First to do task", creationDate: new Date("07.05.2021"), editDate: new Date("07.05.2021") },
   }
 
-  // private progressInputRef = createRef<HTMLInputElement>();
-  // private doneInputRef = createRef<HTMLInputElement>();
-
   _handleKeyPress = (event: KeyboardEvent, name: string) => {
     if (event.key === 'Enter') {
+
       let newTask = {
         id: uuidv4(),
         type: "",
@@ -27,6 +25,7 @@ export default class Board extends Component {
         editDate: new Date(),
       }
       newTask.type = name;
+
       switch (name) {
         case "todo": {
           if (this.state.todoValue === "") return;
@@ -56,18 +55,15 @@ export default class Board extends Component {
 
   _handleChange = (event: React.ChangeEvent<HTMLInputElement>, name: string) => {
     switch (name) {
-      case "todo": {
+      case "todo":
         this.setState({ todoValue: event.target.value });
         break;
-      }
-      case "progress": {
+      case "progress":
         this.setState({ progressValue: event.target.value });
         break;
-      }
-      case "done": {
+      case "done":
         this.setState({ doneValue: event.target.value });
         break;
-      }
       default: break;
     }
   }
@@ -76,15 +72,10 @@ export default class Board extends Component {
     let cardIndex = this.state.cardList.map((card) => { return card.id; }).indexOf(cardId);;
     if (cardIndex === null || cardIndex === undefined) return;
 
-    this.setState({ showModal: true });
     this.setState({
       showModal: true,
       modalCardInfo: this.state.cardList[cardIndex]
     })
-  }
-
-  _handleModalShowInput = () => {
-    this.setState({ showModalDescription: true });
   }
 
   _handleModalTitleChange = (event: React.ChangeEvent<HTMLInputElement>, field: string) => {
@@ -99,11 +90,7 @@ export default class Board extends Component {
     })
   }
 
-  _handleModalKeyPress = (event: KeyboardEvent) => {
-    this.setState({ showModalDescription: false });
-  }
-
-  _handleSaveChanges = () => {
+  _handleModalSaveChanges = () => {
     let cardId = this.state.modalCardInfo.id;
     let cardIndex = this.state.cardList.map((card) => { return card.id; }).indexOf(cardId);
     let cardList = [...this.state.cardList];
@@ -114,7 +101,7 @@ export default class Board extends Component {
     this.setState({ showModal: false });
   }
 
-  _handleDelete = () => {
+  _handleModalDelete = () => {
     let cardId = this.state.modalCardInfo.id;
     let cardIndex = this.state.cardList.map((card) => { return card.id; }).indexOf(cardId);
     let cardList = [...this.state.cardList];
@@ -128,98 +115,69 @@ export default class Board extends Component {
     });
   }
 
+  componentDidMount = () => {
+    // retrieve vals from local storage
+    // if (localStorage.length > 0) {
+    //   Object.keys(localStorage).forEach((cardId) => {
+    //     let result = localStorage.getItem(cardId);
+    //     if (result !== null) {
+    //       let card = JSON.parse(result);
+
+    //       // this.setState({
+    //       //   cardList: [...this.state.cardList, card]
+    //       // })
+    //     }
+    //   });
+    // }
+  }
+
+  componentWillUnmount = () => {
+    // this.state.cardList.forEach((card) => {
+    //   localStorage.setItem(card.id.toString(), JSON.stringify(card));
+    // })
+  }
+
   render() {
     return (
       <div className="container">
         <div className="row">
-          <div className="col-md-3 p-3 m-4 bg-dark rounded">
-            <p className="text-white">To Do</p>
-            {this.state.cardList.filter(card => card.type === "todo").map(card => {
-              return (
-                <Card key={card.id}
-                  title={card.title}
-                  creationDate={card.creationDate}
-                  _handleCardClick={() => this._handleCardOnClick(card.id, card.type)}
-                />
-              );
-            })}
-            <input
-              value={this.state.todoValue}
-              onChange={(e) => this._handleChange(e, "todo")}
-              onKeyPress={(e) => this._handleKeyPress(e, "todo")}
-              className="form-control"
-              placeholder="Add Task" />
-          </div>
-          <div className="col-md-3 p-3 m-4 bg-dark rounded">
-            <p className="text-white">In Progress</p>
-            {this.state.cardList.filter(card => card.type === "progress").map(card => {
-              return (
-                <Card key={card.id}
-                  title={card.title}
-                  creationDate={card.creationDate}
-                  _handleCardClick={() => this._handleCardOnClick(card.id, card.type)}
-                />
-              );
-            })}
-            <input
-              value={this.state.progressValue}
-              onChange={(e) => this._handleChange(e, "progress")}
-              onKeyPress={(e) => this._handleKeyPress(e, "progress")}
-              className="form-control"
-              placeholder="Add Task" />
-          </div>
-          <div className="col-md-3 p-3 m-4 bg-dark rounded">
-            <p className="text-white">Done</p>
-            {this.state.cardList.filter(card => card.type === "done").map(card => {
-              return (
-                <Card key={card.id}
-                  title={card.title}
-                  creationDate={card.creationDate}
-                  _handleCardClick={() => this._handleCardOnClick(card.id, card.type)}
-                />
-              );
-            })}
-            <input
-              value={this.state.doneValue}
-              onChange={(e) => this._handleChange(e, "done")}
-              onKeyPress={(e) => this._handleKeyPress(e, "done")}
-              className="form-control"
-              placeholder="Add Task" />
-          </div>
+          <CardColumn
+            cardList={this.state.cardList}
+            inputValue={this.state.todoValue}
+            colName="todo"
+            _handleCardOnClick={this._handleCardOnClick}
+            _handleColumnInputChange={this._handleChange}
+            _handleColumnKeyPress={this._handleKeyPress}
+          />
+          <CardColumn
+            cardList={this.state.cardList}
+            inputValue={this.state.progressValue}
+            colName="progress"
+            _handleCardOnClick={this._handleCardOnClick}
+            _handleColumnInputChange={this._handleChange}
+            _handleColumnKeyPress={this._handleKeyPress}
+          />
+          <CardColumn
+            cardList={this.state.cardList}
+            inputValue={this.state.doneValue}
+            colName="done"
+            _handleCardOnClick={this._handleCardOnClick}
+            _handleColumnInputChange={this._handleChange}
+            _handleColumnKeyPress={this._handleKeyPress}
+          />
         </div>
-        <Modal show={this.state.showModal} onHide={this._handleSaveChanges}>
-          <Modal.Header>
-            <Modal.Title>
-              <input className="form-control"
-                value={this.state.modalCardInfo.title}
-                onChange={(e) => this._handleModalTitleChange(e, "title")}
-              />
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="d-flex justify-content-between">
-              <h6>Description</h6>
-            </div>
-            <textarea className="form-control"
-              style={{ fontSize: 16 }}
-              value={this.state.modalCardInfo.description}
-              onChange={(e) => this._handleModalDescriptionChange(e)}
-            />
-            <div className="mt-3 d-flex justify-content-between">
-              <p style={{ fontSize: 14 }}>Last Edit: {this.state.modalCardInfo.editDate.toLocaleDateString()}</p>
-              <p style={{ fontSize: 14 }}>Created at: {this.state.modalCardInfo.creationDate.toLocaleDateString()}</p>
-            </div>
-          </Modal.Body>
-          <Modal.Footer className="d-flex justify-content-between">
-            <Button variant="danger" onClick={this._handleDelete}>
-              Delete
-            </Button>
-            <Button variant="success" onClick={this._handleSaveChanges}>
-              Save Changes
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        <CardModal
+          show={this.state.showModal}
+          modalCardInfo={this.state.modalCardInfo}
+          _handleSaveChanges={this._handleModalSaveChanges}
+          _handleDelete={this._handleModalDelete}
+          _handleTitleChange={(e) => this._handleModalTitleChange(e, "title")}
+          _handleDescriptionChange={(e) => this._handleModalDescriptionChange(e)}
+        />
       </div>
     )
   }
 }
+
+
+// 218 lines -> 191 lines -> 188 -> 159
