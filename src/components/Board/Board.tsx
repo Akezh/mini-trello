@@ -2,6 +2,8 @@ import React, { Component, KeyboardEvent } from 'react'
 import { CardModal } from '../CardModal';
 import { CardColumn } from '../CardColumn';
 import { v4 as uuidv4 } from 'uuid';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 export default class Board extends Component {
   state = {
@@ -118,6 +120,19 @@ export default class Board extends Component {
     }
   }
 
+  _handleDropCardOperation = (type: string) => {
+    let cardIndex: any = this.state.cardList.filter((card: any) => card.type !== type)[0];
+    cardIndex.type = type;
+    let cardList: any = this.state.cardList.filter((card: any) => cardIndex.id !== card.id);
+    cardList.push(cardIndex);
+
+    this.setState({
+      cardList
+    })
+
+    console.log(cardIndex);
+  }
+
   componentDidMount = () => {
     // retrieve vals from local storage
     const localStorageData = localStorage.getItem("cardList");
@@ -148,30 +163,36 @@ export default class Board extends Component {
     return (
       <div className="container">
         <div className="row">
-          <CardColumn
-            cardList={this.state.cardList}
-            inputValue={this.state.todoValue}
-            colName="todo"
-            _handleCardOnClick={this._handleCardOnClick}
-            _handleColumnInputChange={this._handleChange}
-            _handleColumnKeyPress={this._handleKeyPress}
-          />
-          <CardColumn
-            cardList={this.state.cardList}
-            inputValue={this.state.progressValue}
-            colName="progress"
-            _handleCardOnClick={this._handleCardOnClick}
-            _handleColumnInputChange={this._handleChange}
-            _handleColumnKeyPress={this._handleKeyPress}
-          />
-          <CardColumn
-            cardList={this.state.cardList}
-            inputValue={this.state.doneValue}
-            colName="done"
-            _handleCardOnClick={this._handleCardOnClick}
-            _handleColumnInputChange={this._handleChange}
-            _handleColumnKeyPress={this._handleKeyPress}
-          />
+          <DndProvider backend={HTML5Backend}>
+
+            <CardColumn
+              cardList={this.state.cardList}
+              inputValue={this.state.todoValue}
+              colName="todo"
+              _handleCardOnClick={this._handleCardOnClick}
+              _handleColumnInputChange={this._handleChange}
+              _handleColumnKeyPress={this._handleKeyPress}
+              dropCardOperation={this._handleDropCardOperation}
+            />
+            <CardColumn
+              cardList={this.state.cardList}
+              inputValue={this.state.progressValue}
+              colName="progress"
+              _handleCardOnClick={this._handleCardOnClick}
+              _handleColumnInputChange={this._handleChange}
+              _handleColumnKeyPress={this._handleKeyPress}
+              dropCardOperation={this._handleDropCardOperation}
+            />
+            <CardColumn
+              cardList={this.state.cardList}
+              inputValue={this.state.doneValue}
+              colName="done"
+              _handleCardOnClick={this._handleCardOnClick}
+              _handleColumnInputChange={this._handleChange}
+              _handleColumnKeyPress={this._handleKeyPress}
+              dropCardOperation={this._handleDropCardOperation}
+            />
+          </DndProvider>
         </div>
         <CardModal
           show={this.state.showModal}
