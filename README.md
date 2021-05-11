@@ -5,6 +5,7 @@
 - Each column can generate cards
 - Edittable cards
 - Local storage
+- Random Drag and Drop (The problem of transfering dragging card id)
 
 ### Left
-- Drag and Drop functionality
+- Drag and Drop the actual card
